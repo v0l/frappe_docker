@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3
 
-ARG PYTHON_VERSION
+ARG PYTHON_VERSION=3.10
 FROM python:${PYTHON_VERSION}-slim-bullseye as base
 
 RUN apt-get update \
@@ -21,7 +21,6 @@ RUN pip install -U pip wheel \
 
 COPY install-app.sh /usr/local/bin/install-app
 
-
 FROM base as build_deps
 
 RUN apt-get update \
@@ -41,7 +40,7 @@ RUN apt-get update \
 
 FROM build_deps as frappe_builder
 
-ARG FRAPPE_VERSION
+ARG FRAPPE_VERSION=version-14
 ARG FRAPPE_REPO=https://github.com/frappe/frappe
 RUN --mount=type=cache,target=/root/.cache/pip \
     git clone --depth 1 -b ${FRAPPE_VERSION} ${FRAPPE_REPO} apps/frappe \
@@ -58,7 +57,7 @@ ARG PAYMENTS_VERSION=develop
 ARG PAYMENTS_REPO=https://github.com/frappe/payments
 ARG HRMS_VERSION=develop
 ARG HRMS_REPO=https://github.com/frappe/hrms
-ARG ERPNEXT_VERSION
+ARG ERPNEXT_VERSION=version-14
 ARG ERPNEXT_REPO=https://github.com/frappe/erpnext
 RUN --mount=type=cache,target=/root/.cache/pip \
     if [ -z "${ERPNEXT_VERSION##*v14*}" ] || [ "$ERPNEXT_VERSION" = "develop" ]; then \
